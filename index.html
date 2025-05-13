@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Запретная любовь — Пазл</title>
+  <style>
+    body {
+      background-color: #fce4ec;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #d81b60;
+      margin-bottom: 10px;
+    }
+    #puzzleContainer {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+    .tile {
+      width: 150px;
+      height: 150px;
+      background-size: 450px 450px;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    .tile:hover {
+      transform: scale(1.05);
+    }
+    #message {
+      font-size: 20px;
+      color: #ad1457;
+      font-weight: bold;
+      display: none;
+    }
+    audio {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Собери пазл любви</h1>
+  <div id="puzzleContainer"></div>
+  <div id="message">❤️ Вы соединили их сердца! ❤️</div>
+  <audio controls autoplay loop>
+    <source src="romantic_music.mp3" type="audio/mpeg">
+  </audio>
+  <script>
+    const imageSize = 450;
+    const tileSize = 150;
+    const container = document.getElementById("puzzleContainer");
+    const message = document.getElementById("message");
+
+    let positions = [...Array(9).keys()];
+    shuffle(positions);
+
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    function createPuzzle() {
+      container.innerHTML = "";
+      positions.forEach((pos, index) => {
+        const tile = document.createElement("div");
+        tile.classList.add("tile");
+        tile.style.backgroundImage = "url('romantic_image.jpg')";
+        tile.style.backgroundPosition = `-${(pos % 3) * tileSize}px -${Math.floor(pos / 3) * tileSize}px`;
+        tile.dataset.index = index;
+        tile.dataset.value = pos;
+        tile.addEventListener("click", () => onTileClick(index));
+        container.appendChild(tile);
+      });
+    }
+
+    function onTileClick(index) {
+      if (index < positions.length - 1) {
+        [positions[index], positions[index + 1]] = [positions[index + 1], positions[index]];
+        createPuzzle();
+        checkWin();
+      }
+    }
+
+    function checkWin() {
+      let win = true;
+      for (let i = 0; i < positions.length; i++) {
+        if (positions[i] !== i) {
+          win = false;
+          break;
+        }
+      }
+      if (win) {
+        message.style.display = "block";
+      }
+    }
+
+    createPuzzle();
+  </script>
+</body>
+</html>
